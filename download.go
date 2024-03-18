@@ -39,17 +39,24 @@ func Download(options *DownloadOptions) (string, error) {
 
 type InstallOptions struct {
 	packageName string
+	lib         string
 }
+
+const defaultLibrary = " .libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
 	const install = `install.packages(
-	"%s" # package name
+	"%s", # package name
+	lib = "%s", #
 )`
+	if options.lib == "" {
+		options.lib = defaultLibrary
+	}
 	_, err := os.Stat(options.packageName)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf(install, options.packageName), nil
+	return fmt.Sprintf(install, options.packageName, options.lib), nil
 }
 
 var inquotes = regexp.MustCompile("\"(.*?)\"")
