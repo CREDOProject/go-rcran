@@ -12,7 +12,7 @@ import (
 const defaultMirror = "http://cran.us.r-project.org"
 
 type DownloadOptions struct {
-	InstallOptions
+	PackageName          string
 	DestinationDirectory string
 	Repository           string
 }
@@ -40,6 +40,7 @@ func Download(options *DownloadOptions) (string, error) {
 type InstallOptions struct {
 	PackageName string
 	Lib         string
+	DryRun      bool
 }
 
 const defaultLibrary = " .libPaths()[1L]"
@@ -52,9 +53,11 @@ func Install(options *InstallOptions) (string, error) {
 	if options.Lib == "" {
 		options.Lib = defaultLibrary
 	}
-	_, err := os.Stat(options.PackageName)
-	if err != nil {
-		return "", err
+	if !options.DryRun {
+		_, err := os.Stat(options.PackageName)
+		if err != nil {
+			return "", err
+		}
 	}
 	return fmt.Sprintf(install, options.PackageName, options.Lib), nil
 }
