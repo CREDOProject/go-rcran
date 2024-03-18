@@ -3,6 +3,8 @@ package gorcran
 import (
 	"fmt"
 	"os"
+	"path"
+	"regexp"
 
 	"github.com/CREDOProject/sharedutils/files"
 )
@@ -48,4 +50,17 @@ func Install(options *InstallOptions) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf(install, options.packageName), nil
+}
+
+var inquotes = regexp.MustCompile("\"(.*?)\"")
+
+func ParsePath(output string) (string, error) {
+	strings := inquotes.FindAllString(output, -1)
+	if len(strings) < 1 {
+		return "", fmt.Errorf("Could not find any strings.")
+	}
+	getLast := strings[len(strings)-1]
+	getLast = path.Clean(getLast)
+	getLast = path.Base(getLast)
+	return getLast, nil
 }
