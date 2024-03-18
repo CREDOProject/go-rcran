@@ -13,8 +13,8 @@ const defaultMirror = "http://cran.us.r-project.org"
 
 type DownloadOptions struct {
 	InstallOptions
-	destinationDirectory string
-	repository           string
+	DestinationDirectory string
+	Repository           string
 }
 
 func Download(options *DownloadOptions) (string, error) {
@@ -23,23 +23,23 @@ func Download(options *DownloadOptions) (string, error) {
 	"%s", # destination directory
 	repos = "%s", # repository
 )`
-	if options.repository == "" {
-		options.repository = defaultMirror
+	if options.Repository == "" {
+		options.Repository = defaultMirror
 	}
-	if !files.IsDir(options.destinationDirectory) {
+	if !files.IsDir(options.DestinationDirectory) {
 		return "", fmt.Errorf("Destination directory does not exist.")
 	}
 	return fmt.Sprintf(
 		download,
-		options.packageName,
-		options.destinationDirectory,
-		options.repository,
+		options.PackageName,
+		options.DestinationDirectory,
+		options.Repository,
 	), nil
 }
 
 type InstallOptions struct {
-	packageName string
-	lib         string
+	PackageName string
+	Lib         string
 }
 
 const defaultLibrary = " .libPaths()[1L]"
@@ -49,14 +49,14 @@ func Install(options *InstallOptions) (string, error) {
 	"%s", # package name
 	lib = "%s", #
 )`
-	if options.lib == "" {
-		options.lib = defaultLibrary
+	if options.Lib == "" {
+		options.Lib = defaultLibrary
 	}
-	_, err := os.Stat(options.packageName)
+	_, err := os.Stat(options.PackageName)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf(install, options.packageName, options.lib), nil
+	return fmt.Sprintf(install, options.PackageName, options.Lib), nil
 }
 
 var inquotes = regexp.MustCompile("\"(.*?)\"")
