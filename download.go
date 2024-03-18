@@ -18,11 +18,11 @@ type DownloadOptions struct {
 }
 
 func Download(options *DownloadOptions) (string, error) {
-	const download = `download.packages(
+	const download = `"download.packages(
 	"%s", # package name
 	"%s", # destination directory
 	repos = "%s", # repository
-)`
+)"`
 	if options.Repository == "" {
 		options.Repository = defaultMirror
 	}
@@ -46,10 +46,10 @@ type InstallOptions struct {
 const defaultLibrary = " .libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
-	const install = `install.packages(
+	const install = `"install.packages(
 	"%s", # package name
 	lib = "%s", #
-)`
+)"`
 	if options.Lib == "" {
 		options.Lib = defaultLibrary
 	}
