@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strings"
 
 	"github.com/CREDOProject/sharedutils/files"
 )
@@ -19,9 +20,9 @@ type DownloadOptions struct {
 
 func Download(options *DownloadOptions) (string, error) {
 	const download = `download.packages(
-	"%s", # package name
-	"%s", # destination directory
-	repos = "%s", # repository
+	pkgs    = "%s", # package name
+	destdir = "%s", # destination directory
+	repos   = "%s", # repository
 )`
 	if options.Repository == "" {
 		options.Repository = defaultMirror
@@ -40,6 +41,7 @@ func Download(options *DownloadOptions) (string, error) {
 type InstallOptions struct {
 	PackageName string
 	Lib         string
+	Repository  string
 	DryRun      bool
 }
 
@@ -47,11 +49,15 @@ const defaultLibrary = " .libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
 	const install = `install.packages(
-	"%s", # package name
-	lib = "%s", #
+	pkgs  = "%s", # package name
+	lib   = "%s", # Library
+	repos = "%s", # Repository
 )`
 	if options.Lib == "" {
 		options.Lib = defaultLibrary
+	}
+	if options.Repository == "" {
+		options.Repository = defaultMirror
 	}
 	if !options.DryRun {
 		_, err := os.Stat(options.PackageName)
@@ -59,18 +65,24 @@ func Install(options *InstallOptions) (string, error) {
 			return "", err
 		}
 	}
-	return fmt.Sprintf(install, options.PackageName, options.Lib), nil
+	return fmt.Sprintf(install,
+			options.PackageName,
+			options.Lib,
+			options.Repository),
+		nil
 }
 
-var inquotes = regexp.MustCompile("\"(.*?)\"")
+var inquotes = regexp.MustCompile("(?:\").+?(?:\")")
 
 func ParsePath(output string) (string, error) {
-	strings := inquotes.FindAllString(output, -1)
-	if len(strings) < 1 {
+	outputStrings := inquotes.FindAllString(output, -1)
+	if len(outputStrings) < 1 {
 		return "", fmt.Errorf("Could not find any strings.")
 	}
-	getLast := strings[len(strings)-1]
+	getLast := outputStrings[len(outputStrings)-1]
 	getLast = path.Clean(getLast)
 	getLast = path.Base(getLast)
+	getLast = strings.TrimPrefix(getLast, "\"")
+	getLast = strings.TrimSuffix(getLast, "\"")
 	return getLast, nil
 }
