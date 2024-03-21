@@ -12,6 +12,42 @@ import (
 
 const defaultMirror = "http://cran.us.r-project.org"
 
+type DependencyOptions struct {
+	PackageName string
+	Repository  string
+	Lib         string
+}
+
+func GetDependencies(o *DependencyOptions) (string, error) {
+	const retrieve = `
+	r <- getOption("repos")
+	r["CRAN"] <- "%s"
+	options(repos=r)
+	pkgs = utils:::getDependencies(
+		pkgs = "%s",
+		available = available.packages(),
+		lib = "%s",
+	)
+	cat(pkgs, sep="\n")
+`
+
+	if o.Repository == "" {
+		o.Repository = defaultMirror
+	}
+	if o.Lib == "" {
+		o.Lib = defaultLibrary
+	}
+	if o.PackageName == "" {
+		return "", fmt.Errorf("Package name not specified")
+	}
+
+	return fmt.Sprintf(retrieve,
+		o.Repository,
+		o.PackageName,
+		o.Lib,
+	), nil
+}
+
 type DownloadOptions struct {
 	PackageName          string
 	DestinationDirectory string
