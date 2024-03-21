@@ -12,13 +12,7 @@ import (
 
 const defaultMirror = "http://cran.us.r-project.org"
 
-type DependencyOptions struct {
-	PackageName string
-	Repository  string
-	Lib         string
-}
-
-func GetDependencies(o *DependencyOptions) (string, error) {
+func GetDependencies(o *InstallOptions) (string, error) {
 	const retrieve = `
 	r <- getOption("repos")
 	r["CRAN"] <- "%s"
