@@ -12,6 +12,41 @@ import (
 
 const defaultMirror = "http://cran.us.r-project.org"
 
+func GetBioconductorDepenencies(o *InstallOptions) (string, error) {
+	const retrieve = `
+	require("BiocManager")
+	r <- getOption("repos")
+	r <- BiocManager::Repositories()
+	r["CRAN"] <- "%s"
+	options(repos=r)
+	pkgs = utils:::getDependencies(
+		pkgs = "%s",
+		available = available.packages(),
+		lib = "%s",
+	)
+	cat(pkgs, sep="\n")
+`
+	return _getDependencies(retrieve, o)
+}
+
+func _getDependencies(template string, o *InstallOptions) (string, error) {
+	if o.Repository == "" {
+		o.Repository = defaultMirror
+	}
+	if o.Lib == "" {
+		o.Lib = defaultLibrary
+	}
+	if o.PackageName == "" {
+		return "", fmt.Errorf("Package name not specified")
+	}
+
+	return fmt.Sprintf(template,
+		o.Repository,
+		o.PackageName,
+		o.Lib,
+	), nil
+}
+
 func GetDependencies(o *InstallOptions) (string, error) {
 	const retrieve = `
 	r <- getOption("repos")
@@ -24,22 +59,7 @@ func GetDependencies(o *InstallOptions) (string, error) {
 	)
 	cat(pkgs, sep="\n")
 `
-
-	if o.Repository == "" {
-		o.Repository = defaultMirror
-	}
-	if o.Lib == "" {
-		o.Lib = defaultLibrary
-	}
-	if o.PackageName == "" {
-		return "", fmt.Errorf("Package name not specified")
-	}
-
-	return fmt.Sprintf(retrieve,
-		o.Repository,
-		o.PackageName,
-		o.Lib,
-	), nil
+	return _getDependencies(retrieve, o)
 }
 
 type DownloadOptions struct {
@@ -48,12 +68,21 @@ type DownloadOptions struct {
 	Repository           string
 }
 
-func Download(options *DownloadOptions) (string, error) {
-	const download = `download.packages(
-	pkgs    = "%s", # package name
-	destdir = "%s", # destination directory
-	repos   = "%s", # repository
+func DownloadBioconductor(options *DownloadOptions) (string, error) {
+	const download = `
+	require("BiocManager")
+	r <- getOption("repos")
+	r <- BiocManager::repositories()
+	r["CRAN"] <- "%s"
+	download.packages(
+		repos   = r, # repository
+		pkgs    = "%s", # package name
+		destdir = "%s", # destination directory
 )`
+	return _download(download, options)
+}
+
+func _download(template string, options *DownloadOptions) (string, error) {
 	if options.Repository == "" {
 		options.Repository = defaultMirror
 	}
@@ -61,11 +90,20 @@ func Download(options *DownloadOptions) (string, error) {
 		return "", fmt.Errorf("Destination directory does not exist.")
 	}
 	return fmt.Sprintf(
-		download,
+		template,
+		options.Repository,
 		options.PackageName,
 		options.DestinationDirectory,
-		options.Repository,
 	), nil
+}
+
+func Download(options *DownloadOptions) (string, error) {
+	const download = `download.packages(
+	repos   = "%s", # repository
+	pkgs    = "%s", # package name
+	destdir = "%s", # destination directory
+)`
+	return _download(download, options)
 }
 
 type InstallOptions struct {
@@ -75,31 +113,51 @@ type InstallOptions struct {
 	DryRun      bool
 }
 
-const defaultLibrary = " .libPaths()[1L]"
-
-func Install(options *InstallOptions) (string, error) {
-	const install = `install.packages(
-	pkgs  = "%s", # package name
-	lib   = "%s", # Library
-	repos = "%s", # Repository
-)`
-	if options.Lib == "" {
-		options.Lib = defaultLibrary
+func _install(template string, o *InstallOptions) (string, error) {
+	if o.Lib == "" {
+		o.Lib = defaultLibrary
 	}
-	if options.Repository == "" {
-		options.Repository = defaultMirror
+	if o.Repository == "" {
+		o.Repository = defaultMirror
 	}
-	if !options.DryRun {
-		_, err := os.Stat(options.PackageName)
+	if !o.DryRun {
+		_, err := os.Stat(o.PackageName)
 		if err != nil {
 			return "", err
 		}
 	}
-	return fmt.Sprintf(install,
-			options.PackageName,
-			options.Lib,
-			options.Repository),
+	return fmt.Sprintf(template,
+			o.Repository,
+			o.PackageName,
+			o.Lib,
+		),
 		nil
+}
+
+func InstallBioconductor(o *InstallOptions) (string, error) {
+	const install = `
+	require("BiocManager")
+	r <- getOption("repos")
+	r <- BiocManager::repositories()
+	r["CRAN"] <- "%s"
+	install.packages(
+		pkgs  = "%s",
+		lib   = "%s",
+		repos = r,
+	)`
+
+	return _install(install, o)
+}
+
+const defaultLibrary = " .libPaths()[1L]"
+
+func Install(options *InstallOptions) (string, error) {
+	const install = `install.packages(
+	repos = "%s", # Repository
+	pkgs  = "%s", # package name
+	lib   = "%s", # Library
+)`
+	return _install(install, options)
 }
 
 var inquotes = regexp.MustCompile("(?:\").+?(?:\")")
