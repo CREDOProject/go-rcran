@@ -29,17 +29,12 @@ func _getDependencies(template string, o *InstallOptions) (string, error) {
 	if o.Repository == "" {
 		o.Repository = defaultMirror
 	}
-	if o.Lib == "" {
-		o.Lib = defaultLibrary
-	}
 	if o.PackageName == "" {
 		return "", fmt.Errorf("Package name not specified")
 	}
-
 	return fmt.Sprintf(template,
 		o.Repository,
 		o.PackageName,
-		o.Lib,
 	), nil
 }
 
