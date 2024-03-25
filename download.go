@@ -61,6 +61,7 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
+	options(repos=r)
 	download.packages(
 		repos   = r, # repository
 		pkgs    = "%s", # package name
