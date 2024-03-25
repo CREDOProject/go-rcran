@@ -16,7 +16,7 @@ func GetBioconductorDepenencies(o *InstallOptions) (string, error) {
 	const retrieve = `
 	require("BiocManager")
 	r <- getOption("repos")
-	r <- BiocManager::Repositories()
+	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
 	options(repos=r)
 	pkgs = tools::package_dependencies(recursive = TRUE)$%s
