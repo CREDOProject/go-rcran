@@ -19,11 +19,7 @@ func GetBioconductorDepenencies(o *InstallOptions) (string, error) {
 	r <- BiocManager::Repositories()
 	r["CRAN"] <- "%s"
 	options(repos=r)
-	pkgs = utils:::getDependencies(
-		pkgs = "%s",
-		available = available.packages(),
-		lib = "%s",
-	)
+	pkgs = tools::package_dependencies(recursive = TRUE)$%s
 	cat(pkgs, sep="\n")
 `
 	return _getDependencies(retrieve, o)
@@ -52,11 +48,7 @@ func GetDependencies(o *InstallOptions) (string, error) {
 	r <- getOption("repos")
 	r["CRAN"] <- "%s"
 	options(repos=r)
-	pkgs = utils:::getDependencies(
-		pkgs = "%s",
-		available = available.packages(),
-		lib = "%s",
-	)
+	pkgs = tools::package_dependencies(recursive = TRUE)$%s
 	cat(pkgs, sep="\n")
 `
 	return _getDependencies(retrieve, o)
