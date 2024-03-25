@@ -149,7 +149,7 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 	return _install(install, o)
 }
 
-const defaultLibrary = " .libPaths()[1L]"
+const defaultLibrary = ".libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
 	const install = `install.packages(
