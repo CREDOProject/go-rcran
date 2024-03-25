@@ -22,7 +22,7 @@ func GetBioconductorDepenencies(o *InstallOptions) (string, error) {
 	pkgs = tools::package_dependencies(
 		packages = "%s",
 		recursive = TRUE,
-	)
+	)$%s
 	cat(pkgs, sep="\n")
 `
 	return _getDependencies(retrieve, o)
@@ -38,6 +38,7 @@ func _getDependencies(template string, o *InstallOptions) (string, error) {
 	return fmt.Sprintf(template,
 		o.Repository,
 		o.PackageName,
+		o.PackageName,
 	), nil
 }
 
@@ -49,7 +50,7 @@ func GetDependencies(o *InstallOptions) (string, error) {
 	pkgs = tools::package_dependencies(
 		packages = "%s",
 		recursive = TRUE,
-	)
+	)$%s
 	cat(pkgs, sep="\n")
 `
 	return _getDependencies(retrieve, o)
