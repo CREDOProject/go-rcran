@@ -75,7 +75,7 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 			pkgs    = "%s", # package name
 			destdir = "%s", # destination directory
 		),
-		warning = function(w) quit(status=1)
+		warning = function(w) quit(status=1),
 	)`
 	return _download(download, options)
 }
@@ -149,7 +149,7 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 			lib   = "%s",
 			repos = r,
 		),
-		warning = function(w) quit(status=1)
+		warning = function(w) quit(status=1),
 	)`
 
 	return _install(install, o)
