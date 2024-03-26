@@ -139,7 +139,7 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 		pkgs  = "%s",
 		lib   = "%s",
 		repos = r,
-	), warning = function(w) stop(w))`
+	), warning = function(w) quit(status=1))`
 
 	return _install(install, o)
 }
@@ -151,7 +151,7 @@ func Install(options *InstallOptions) (string, error) {
 	repos = "%s", # Repository
 	pkgs  = "%s", # package name
 	lib   = "%s", # Library
-), warning = function(w) stop(w))`
+), warning = function(w) quit(status=1))`
 	return _install(install, options)
 }
 
