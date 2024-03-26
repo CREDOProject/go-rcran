@@ -69,14 +69,11 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
 	options(repos=r)
-	withCallingHandlers(
-		download.packages(
+	withCallingHandlers(download.packages(
 			repos   = r, # repository
 			pkgs    = "%s", # package name
 			destdir = "%s", # destination directory
-		),
-		warning = function(w) quit(status=1),
-	)`
+		), warning = function(w) quit(status=1))`
 	return _download(download, options)
 }
 
@@ -97,14 +94,11 @@ func _download(template string, options *DownloadOptions) (string, error) {
 
 func Download(options *DownloadOptions) (string, error) {
 	const download = `
-	withCallingHandlers(
-		download.packages(
+	withCallingHandlers(download.packages(
 			repos   = "%s", # repository
 			pkgs    = "%s", # package name
 			destdir = "%s", # destination directory
-		),
-		warning = function(w) quit(status=1)
-	)`
+		), warning = function(w) quit(status=1))`
 
 	return _download(download, options)
 }
@@ -143,14 +137,11 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
-	withCallingHandlers(
-		install.packages(
+	withCallingHandlers(install.packages(
 			pkgs  = "%s",
 			lib   = "%s",
 			repos = r,
-		),
-		warning = function(w) quit(status=1),
-	)`
+		), warning = function(w) quit(status=1))`
 
 	return _install(install, o)
 }
