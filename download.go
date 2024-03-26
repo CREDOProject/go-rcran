@@ -135,11 +135,11 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
-	install.packages(
+	withCallingHandlers(install.packages(
 		pkgs  = "%s",
 		lib   = "%s",
 		repos = r,
-	)`
+	), warning = function(w) stop(w))`
 
 	return _install(install, o)
 }
@@ -147,11 +147,11 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 const defaultLibrary = ".libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
-	const install = `install.packages(
+	const install = `withCallingHandlers(install.packages(
 	repos = "%s", # Repository
 	pkgs  = "%s", # package name
 	lib   = "%s", # Library
-)`
+), warning = function(w) stop(w))`
 	return _install(install, options)
 }
 
