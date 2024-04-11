@@ -75,7 +75,7 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 			pkgs    = "%s", # package name
 			destdir = "%s", # destination directory
 		),
-		warning = function(w) quit(status=1),
+		warning = function(w) quit(status=1)
 	)`
 	return _download(download, options)
 }
