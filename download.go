@@ -69,11 +69,11 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
 	options(repos=r)
-	withCallingHandlers(download.packages(
-			repos   = r, # repository
-			pkgs    = "%s", # package name
-			destdir = "%s", # destination directory
-		), warning = function(w) quit(status=1))`
+	download.packages(
+		repos   = r, # repository
+		pkgs    = "%s", # package name
+		destdir = "%s", # destination directory
+	)`
 	return _download(download, options)
 }
 
@@ -94,11 +94,11 @@ func _download(template string, options *DownloadOptions) (string, error) {
 
 func Download(options *DownloadOptions) (string, error) {
 	const download = `
-	withCallingHandlers(download.packages(
-			repos   = "%s", # repository
-			pkgs    = "%s", # package name
-			destdir = "%s", # destination directory
-		), warning = function(w) quit(status=1))`
+	download.packages(
+		repos   = "%s", # repository
+		pkgs    = "%s", # package name
+		destdir = "%s", # destination directory
+	)`
 
 	return _download(download, options)
 }
@@ -137,11 +137,11 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
-	withCallingHandlers(install.packages(
-			pkgs  = "%s",
-			lib   = "%s",
-			repos = r,
-		), warning = function(w) quit(status=1))`
+	install.packages(
+		pkgs  = "%s",
+		lib   = "%s",
+		repos = r,
+	)`
 
 	return _install(install, o)
 }
@@ -149,11 +149,11 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 const defaultLibrary = ".libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
-	const install = `withCallingHandlers(install.packages(
-	repos = "%s", # Repository
-	pkgs  = "%s", # package name
-	lib   = "%s", # Library
-), warning = function(w) quit(status=1))`
+	const install = `install.packages(
+		repos = "%s", # Repository
+		pkgs  = "%s", # package name
+		lib   = "%s", # Library
+	)`
 	return _install(install, options)
 }
 
