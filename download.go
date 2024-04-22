@@ -169,14 +169,22 @@ func Install(options *InstallOptions) (string, error) {
 var inquotes = regexp.MustCompile("(?:\").+?(?:\")")
 
 func ParsePath(output string) (string, error) {
+	getLast, err := GetPath(output)
+	if err != nil {
+		return "", err
+	}
+	getLast = path.Base(getLast)
+	return getLast, nil
+}
+
+func GetPath(output string) (string, error) {
 	outputStrings := inquotes.FindAllString(output, -1)
 	if len(outputStrings) < 1 {
 		return "", fmt.Errorf("Could not find any strings.")
 	}
-	getLast := outputStrings[len(outputStrings)-1]
-	getLast = path.Clean(getLast)
-	getLast = path.Base(getLast)
-	getLast = strings.TrimPrefix(getLast, "\"")
-	getLast = strings.TrimSuffix(getLast, "\"")
-	return getLast, nil
+	filepath := outputStrings[len(outputStrings)-1]
+	filepath = path.Clean(filepath)
+	filepath = strings.TrimPrefix(filepath, "\"")
+	filepath = strings.TrimSuffix(filepath, "\"")
+	return filepath, nil
 }
