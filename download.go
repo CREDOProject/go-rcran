@@ -166,6 +166,27 @@ func Install(options *InstallOptions) (string, error) {
 	return _install(install, options)
 }
 
+func InstallLocal(o *InstallOptions) (string, error) {
+	const install = `install.packages(
+		repos = NULL, # Repository
+		pkgs  = "%s", # package name
+		lib   = "%s", # Library
+	)`
+	if o.Lib == "" {
+		o.Lib = defaultLibrary
+	}
+	if !o.DryRun {
+		_, err := os.Stat(o.PackageName)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf(install,
+		o.PackageName,
+		o.Lib,
+	), nil
+}
+
 var inquotes = regexp.MustCompile("(?:\").+?(?:\")")
 
 func ParsePath(output string) (string, error) {
