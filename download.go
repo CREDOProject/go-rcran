@@ -12,7 +12,7 @@ import (
 
 const defaultMirror = "http://cran.us.r-project.org"
 
-func GetBioconductorDepenencies(o *InstallOptions) (string, error) {
+func GetBioconductorDependencies(o *InstallOptions) (string, error) {
 	const retrieve = `
 	require("BiocManager")
 	r <- getOption("repos")
