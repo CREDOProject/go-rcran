@@ -14,7 +14,7 @@ const defaultMirror = "http://cran.us.r-project.org"
 
 func GetBioconductorDependencies(o *InstallOptions) (string, error) {
 	const retrieve = `
-	require("BiocManager")
+	require("BiocManager", lib.loc = "%s")
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
@@ -36,6 +36,7 @@ func _getDependencies(template string, o *InstallOptions) (string, error) {
 		return "", fmt.Errorf("Package name not specified")
 	}
 	return fmt.Sprintf(template,
+		o.Lib,
 		o.Repository,
 		o.PackageName,
 		o.PackageName,
@@ -57,6 +58,7 @@ func GetDependencies(o *InstallOptions) (string, error) {
 }
 
 type DownloadOptions struct {
+	Library              string
 	PackageName          string
 	DestinationDirectory string
 	Repository           string
@@ -64,7 +66,7 @@ type DownloadOptions struct {
 
 func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	const download = `
-	require("BiocManager")
+	require("BiocManager", lib.loc = "%s")
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
@@ -89,6 +91,7 @@ func _download(template string, options *DownloadOptions) (string, error) {
 	}
 	return fmt.Sprintf(
 		template,
+		options.Library,
 		options.Repository,
 		options.PackageName,
 		options.DestinationDirectory,
@@ -130,6 +133,7 @@ func _install(template string, o *InstallOptions) (string, error) {
 		}
 	}
 	return fmt.Sprintf(template,
+			o.Lib,
 			o.Repository,
 			o.PackageName,
 			o.Lib,
@@ -139,7 +143,7 @@ func _install(template string, o *InstallOptions) (string, error) {
 
 func InstallBioconductor(o *InstallOptions) (string, error) {
 	const install = `
-	require("BiocManager")
+	require("BiocManager", lib.loc = "%s")
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
