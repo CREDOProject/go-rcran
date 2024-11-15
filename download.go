@@ -35,8 +35,11 @@ func _getDependencies(template string, o *InstallOptions) (string, error) {
 	if o.PackageName == "" {
 		return "", fmt.Errorf("Package name not specified")
 	}
+	if o.Library == "" {
+		o.Library = defaultLibrary
+	}
 	return fmt.Sprintf(template,
-		o.Lib,
+		o.Library,
 		o.Repository,
 		o.PackageName,
 		o.PackageName,
@@ -82,19 +85,22 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	return _download(download, options)
 }
 
-func _download(template string, options *DownloadOptions) (string, error) {
-	if options.Repository == "" {
-		options.Repository = defaultMirror
+func _download(template string, o *DownloadOptions) (string, error) {
+	if o.Repository == "" {
+		o.Repository = defaultMirror
 	}
-	if !files.IsDir(options.DestinationDirectory) {
+	if !files.IsDir(o.DestinationDirectory) {
 		return "", fmt.Errorf("Destination directory does not exist.")
+	}
+	if o.Library == "" {
+		o.Library = defaultLibrary
 	}
 	return fmt.Sprintf(
 		template,
-		options.Library,
-		options.Repository,
-		options.PackageName,
-		options.DestinationDirectory,
+		o.Library,
+		o.Repository,
+		o.PackageName,
+		o.DestinationDirectory,
 	), nil
 }
 
@@ -114,14 +120,14 @@ func Download(options *DownloadOptions) (string, error) {
 
 type InstallOptions struct {
 	PackageName string
-	Lib         string
+	Library     string
 	Repository  string
 	DryRun      bool
 }
 
 func _install(template string, o *InstallOptions) (string, error) {
-	if o.Lib == "" {
-		o.Lib = defaultLibrary
+	if o.Library == "" {
+		o.Library = defaultLibrary
 	}
 	if o.Repository == "" {
 		o.Repository = defaultMirror
@@ -133,10 +139,10 @@ func _install(template string, o *InstallOptions) (string, error) {
 		}
 	}
 	return fmt.Sprintf(template,
-			o.Lib,
+			o.Library,
 			o.Repository,
 			o.PackageName,
-			o.Lib,
+			o.Library,
 		),
 		nil
 }
@@ -176,8 +182,8 @@ func InstallLocal(o *InstallOptions) (string, error) {
 		pkgs  = "%s", # package name
 		lib   = "%s", # Library
 	)`
-	if o.Lib == "" {
-		o.Lib = defaultLibrary
+	if o.Library == "" {
+		o.Library = defaultLibrary
 	}
 	if !o.DryRun {
 		_, err := os.Stat(o.PackageName)
@@ -187,7 +193,7 @@ func InstallLocal(o *InstallOptions) (string, error) {
 	}
 	return fmt.Sprintf(install,
 		o.PackageName,
-		o.Lib,
+		o.Library,
 	), nil
 }
 
