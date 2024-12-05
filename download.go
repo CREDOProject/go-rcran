@@ -106,6 +106,7 @@ func _download(template string, o *DownloadOptions) (string, error) {
 
 func Download(options *DownloadOptions) (string, error) {
 	const download = `
+	# %s
 	withCallingHandlers(
 		download.packages(
 			repos   = "%s", # repository
@@ -168,7 +169,9 @@ func InstallBioconductor(o *InstallOptions) (string, error) {
 const defaultLibrary = ".libPaths()[1L]"
 
 func Install(options *InstallOptions) (string, error) {
-	const install = `install.packages(
+	const install = `
+		# %s
+		install.packages(
 		repos = "%s", # Repository
 		pkgs  = "%s", # package name
 		lib   = "%s", # Library
