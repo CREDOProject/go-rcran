@@ -69,7 +69,7 @@ type DownloadOptions struct {
 
 func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	const download = `
-	require("BiocManager", lib.loc = "%s")
+	require("BiocManager", lib.loc = %s)
 	r <- getOption("repos")
 	r <- BiocManager::repositories()
 	r["CRAN"] <- "%s"
