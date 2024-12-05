@@ -94,6 +94,7 @@ func _download(template string, o *DownloadOptions) (string, error) {
 	}
 	if o.Library == "" {
 		o.Library = defaultLibrary
+	} else {
 	}
 	return fmt.Sprintf(
 		template,
