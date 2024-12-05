@@ -48,6 +48,7 @@ func _getDependencies(template string, o *InstallOptions) (string, error) {
 
 func GetDependencies(o *InstallOptions) (string, error) {
 	const retrieve = `
+	# %s
 	r <- getOption("repos")
 	r["CRAN"] <- "%s"
 	options(repos=r)
@@ -76,9 +77,9 @@ func DownloadBioconductor(options *DownloadOptions) (string, error) {
 	options(repos=r)
 	withCallingHandlers(
 		download.packages(
-			repos   = r, # repository
+			repos   = r,	# repository
 			pkgs    = "%s", # package name
-			destdir = "%s", # destination directory
+			destdir = "%s"	# destination directory
 		),
 		warning = function(w) quit(status=1)
 	)`
@@ -112,7 +113,7 @@ func Download(options *DownloadOptions) (string, error) {
 		download.packages(
 			repos   = "%s", # repository
 			pkgs    = "%s", # package name
-			destdir = "%s", # destination directory
+			destdir = "%s" # destination directory
 		),
 		warning = function(w) quit(status=1)
 	)`
@@ -175,7 +176,7 @@ func Install(options *InstallOptions) (string, error) {
 		install.packages(
 		repos = "%s", # Repository
 		pkgs  = "%s", # package name
-		lib   = "%s", # Library
+		lib   = %s, # Library
 	)`
 	return _install(install, options)
 }
