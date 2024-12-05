@@ -106,6 +106,7 @@ func _download(template string, o *DownloadOptions) (string, error) {
 
 func Download(options *DownloadOptions) (string, error) {
 	const download = `
+	# %s
 	withCallingHandlers(
 		download.packages(
 			repos   = "%s", # repository
