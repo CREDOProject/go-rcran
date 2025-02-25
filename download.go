@@ -182,11 +182,18 @@ func Install(options *InstallOptions) (string, error) {
 }
 
 func InstallLocal(o *InstallOptions) (string, error) {
-	const install = `install.packages(
-		repos = NULL, # Repository
-		pkgs  = "%s", # package name
-		lib   = "%s", # Library
-	)`
+	const install = `
+pkg_path <- "%s"
+lib_path <- "%s"
+pkg_name <- sub("_.*$", "", basename(pkg_path))
+installed_pkgs <- installed.packages(lib.loc = lib_path)[, "Package"]
+if (!(pkg_name %%in%% installed_pkgs)) {
+    install.packages(
+        pkgs = pkg_path,
+        lib = lib_path,
+        repos = NULL
+    )
+}`
 	if o.Library == "" {
 		o.Library = defaultLibrary
 	}
